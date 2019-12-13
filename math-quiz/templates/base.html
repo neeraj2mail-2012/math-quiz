@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MathematicsQuiz</title>
+
+    <!-- Bootstrap -->
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- In-lining styles to avoid needing a separate .css file -->
+
+    <style>
+        hr {
+            border-color: #cccccc;
+            margin: 0;
+        }
+
+        .no-margins {
+            margin: 0px;
+        }
+
+        .with-margins {
+            margin: 10px;
+        }
+
+        .col-centered {
+            float: none;
+            margin: 0 auto;
+        }
+    </style>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.js"></script>
+      <script src="//cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.js"></script>
+    <![endif]-->
+    <style>
+   
+            #footer {
+             position:fixed;
+             bottom:0;
+             background-color: rebeccapurple;
+             color:aliceblue;
+             width:100%;
+             text-align: center;
+         }
+             </style>
+</head>
+
+
+<body>
+    {% block body %}
+    <nav class="navbar navbar-inverse" style="background-color: rebeccapurple;color: tomato;">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/"><span class="glyphicon glyphicon-home"></span> MathematicsQuiz</a>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href='/user/register'><span class="glyphicon glyphicon-user"></span>
+                        Sign
+                        Up</a></li>
+                <li><a href='/user/sign-in'><span class="glyphicon glyphicon-log-in"></span>
+                        Login</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div id="main-div" class="with-margins">
+        {# One-time system messages called Flash messages #}
+        {% block flash_messages %}
+        {%- with messages = get_flashed_messages(with_categories=true) -%}
+        {% if messages %}
+        {% for category, message in messages %}
+        {% if category=='error' %}
+        {% set category='danger' %}
+        {% endif %}
+        <div class="alert alert-{{category}}">{{ message|safe }}</div>
+        {% endfor %}
+        {% endif %}
+        {%- endwith %}
+        {% endblock %}
+
+        {% block main %}{% block content %}{% endblock %}{% endblock %}
+    </div>
+
+    <br />
+    <hr class="no-margins" />
+    <div id="footer">
+        <div>MathematicsQuiz v1.0</div>
+    </div>
+    {% endblock %}
+
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+</body>
+
+</html>

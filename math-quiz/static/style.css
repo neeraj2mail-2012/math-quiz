@@ -1,0 +1,38 @@
+@font-face {
+	font-family: logo;
+	src: url('ShareTech-Regular.ttf');
+}
+@font-face {
+	font-family: readmee;
+	src: url('Raleway-Regular.ttf');
+}
+#reg{
+	margin-left: 4vw;
+}
+body{
+	margin-top: 0vw;
+	background-size: cover;
+}
+
+
+#tagline {
+	margin-left: 0.6vw;
+	font-size: 1.6vw;
+	color: white;
+}
+#readme {
+	border-radius: 2vw;
+	margin-top: 0vw;
+	margin-bottom: 0;
+	background: #262626 !important; 
+	color: white;
+}
+.subhead {
+	margin-top: 1.3vw;
+	font-weight: bold;
+	font-family: readmee;
+}
+.jumbotron p {
+	font-weight: normal;
+	font-size: 1.5vw;
+}

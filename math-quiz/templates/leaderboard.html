@@ -1,0 +1,54 @@
+{% extends 'main_base.html' %}
+{% block content %}
+
+<style>
+	.table-bordered th,
+	.table-bordered td {
+		/*border: 1px solid #dee2e6 !important;*/
+		border-left: 0px;
+		border-right: 0px;
+		/*border-bottom: 2px;*/
+		padding: .4rem;
+		border-color: gainsboro;
+	}
+</style>
+<div id="leaderboard-table"></div>
+<script>
+	var user_id = $('#user').val();
+	var api_url = "http://127.0.0.1:9090/math/" //Api with namespace
+	
+	$.ajax({
+		type: "GET",
+		url: api_url + "leaderboard",
+		dataType: "json",
+		contentType: 'application/json',
+		data: JSON.stringify({ "uid": user_id }),
+		success: function (data, textStatus, jQxhr) {
+			var table = `<div class="container table-responsive-sm table-responsive-lg table-responsive-xl table-responsive-md">
+				<table class="table table table-striped table-bordered table-hover">
+					<thead  style="background-color: rebeccapurple;color:aliceblue">
+						<tr>
+						<th scope="col">#</th>
+						<th scope="col">User</th>
+						<th scope="col">Score</th>
+						</tr>
+					</thead>
+					<tbody >`
+			for(i=0;i<data.length;i++){
+				table += `<tr>
+							<th scope="row" >` + parseInt(i+1) + `</th>`+
+							`<td ><a href="#">`+ data[i]['username'] + `</a></td>`+
+							`<td >` + data[i]['mathematics_score'] +`</td>`+
+						   `</tr>`
+			}
+			table +=`</tbody>
+						</table>
+					</div>`		
+			$('#leaderboard-table').html(table)
+		},
+		error: function (jqXhr, textStatus, errorThrown) {
+			console.log(errorThrown);
+		}
+	});	
+</script>
+{% endblock %}

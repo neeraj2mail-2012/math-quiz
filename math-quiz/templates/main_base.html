@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>MathematicsQuiz</title>
+    <meta charset="utf-8">
+    <link rel=stylesheet type=text/css href="{{url_for('static', filename='style.css')}}">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!-- Materialise CSS -->
+    <!--link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css"-->
+    <!--script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <input type="hidden" id="user" name="{{ current_user.username }}" value="{{ current_user.id }}">
+    <!--link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/-->
+
+    <style>
+        #footer {
+            position: fixed;
+            bottom: 0;
+            background-color: rebeccapurple;
+            color: aliceblue;
+            width: 100%;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-inverse" style="background-color: rebeccapurple;height:14px;">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/"><span class="glyphicon glyphicon-home"></span> MathematicsQuiz</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><span
+                            class="glyphicon glyphicon-th-list"></span> Categories<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/quiz/mathematics"><span class="glyphicon glyphicon-book"></span> Mathematics</a>
+                        </li>
+                    </ul>
+                </li>
+                <li><a href="http://127.0.0.1:5000/leaderboard"><span
+                            class="glyphicon glyphicon-sort-by-attributes-alt"></span> Leaderboards</a></li>
+                <li>
+                        {% if currentuser == 'Admin' %}
+                        <a href="/admin">
+                            <span class="glyphicon glyphicon-lock"></span> Master Access
+                        </a>
+                        {% endif %}
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/user/sign-out"><span class="glyphicon glyphicon-new-window"></span> Log-Out</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="content-wrapper" id="body">
+        {% block header %}
+        {% endblock %}
+        {% block content %}
+        {% endblock %}
+    </div>
+
+
+    <br /><br />
+    <div id="footer">
+        <p>&copy; MathematicsQuiz.</p>
+    </div><br />
+</body>
+
+</html>

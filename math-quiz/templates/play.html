@@ -1,0 +1,285 @@
+{% extends 'main_base.html' %}
+{% block content %}
+<link rel=stylesheet type=text/css href="{{url_for('static', filename='style.css')}}">
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<!--a href="/quiz/mathematics" class="btn btn-info btn-lg">
+	<span class="glyphicon glyphicon-play"></span> Resume your previous quiz or select the Category dropdwn
+</a-->
+<div id="question_list"></div>
+<div>
+	<button type="button" id="final_submit" class="btn btn-secondary btn-lg" onclick="final_score()" style="margin-left:65px;"><span
+			class="glyphicon glyphicon-send"></span> Final Submit</button>
+</div>
+<script>
+	var user_id = $('#user').val();
+	var api_url = "http://127.0.0.1:9090/math/" //Api with namespace
+	list_qa();
+	function list_qa() {
+		var userid = parseInt($('#userid').val(), 10);
+		$.ajax({
+			type: "GET",
+			url: api_url + "quiz_questions",
+			dataType: "json",
+			contentType: 'application/json',
+			data: JSON.stringify({ "userid": user_id }),
+
+			success: function (data, textStatus, jQxhr) {
+				console.log(data)
+				var ques_html = `<div class="container">`
+				for (i = 0; i < data.length; i++) {
+					if (data[i]['Type'] == 'Single') {
+						if(data[i]["answer_flag"] == 1){
+							ques_html += `<div class="panel panel-success" id="panel` + parseInt(i + 1) + `">` 
+						}else if(data[i]["answer_flag"] == 2){
+							ques_html += `<div class="panel panel-danger" id="panel` + parseInt(i + 1) + `">`
+						}else{
+							ques_html += `<div class="panel panel-primary" id="panel` + parseInt(i + 1) + `">`
+						}				
+						ques_html +=	`<div class="panel-heading">Question` + parseInt(i + 1) + `</div>` +
+							`<div class="panel-body">` +
+							`<label>` + data[i]['question'] + `</label>` +
+							`<form id=f` + parseInt(i + 1) + `">`
+						for(j=1;j<=4;j++){
+							var option_str = 'option'+ j.toString()
+							//console.log("option_str--"+ option_str)
+							if (data[i]['option-selected'] == option_str ) {
+								ques_html += `<div class="radio">` +
+									`<label><input type="radio" name="selected" id="f` + parseInt(i +1) + `q` + parseInt(j) +`" checked disabled><span id="strike` + parseInt(i + 1) + `q` + parseInt(j) + `">` + data[i][option_str] + `</span>` +
+									`</label>` +
+									`</div>`
+							}else {
+								ques_html += `<div class="radio">` +
+									`<label><input type="radio" name="selected" id="f` + parseInt(i + 1) + `q` + parseInt(j) + `">
+												<span id="strike` + parseInt(i + 1) + `q` + parseInt(j) +`">` + data[i][option_str] + `</span>` +
+									`</label>` +
+									`</div>`
+							}
+						}
+		
+						ques_html +=`</form>` 
+						if (data[i]["answer_flag"] == 1) {
+							ques_html += `<p id="u` + parseInt(i + 1) + `" style="color:green";>Correct Answer</p>` +
+							`<button type="button" id="b` + parseInt(i + 1) + `" class="btn btn-primary pull-right" onclick="evaluate_question(` + parseInt(i + 1) + `,` + data[i]['id'] + `)" disabled>Submit</button>` +
+							`</div>`
+						}else if (data[i]["answer_flag"] == 2) {
+							ques_html += `<p id="u` + parseInt(i + 1) + `" style="color:red";>Wrong Answer</p>` +
+							`<button type="button" id="b` + parseInt(i + 1) + `" class="btn btn-primary pull-right" onclick="evaluate_question(` + parseInt(i + 1) + `,` + data[i]["id"] + `)" disabled>Submit</button>` +
+							`</div>`
+						}
+						else{
+							ques_html += `<p id="u` + parseInt(i + 1) + `"></p>` +
+							`<button type="button" id="b` + parseInt(i + 1) + `" class="btn btn-primary pull-right" onclick="evaluate_question(` + parseInt(i + 1) + `,` + data[i]["id"] + `)">Submit</button>` +
+							`</div>`
+						}
+					}
+					if (data[i]['Type'] == 'Multiple') {
+						if(data[i]["answer_flag"] == 1){
+							ques_html += `<div class="panel panel-success" id="panel` + parseInt(i + 1) + `">` 
+						}else if(data[i]["answer_flag"] == 2){
+							ques_html += `<div class="panel panel-danger" id="panel` + parseInt(i + 1) + `">`
+						}else{
+							ques_html += `<div class="panel panel-primary" id="panel` + parseInt(i + 1) + `">`
+						}				
+						ques_html +=	`<div class="panel-heading">Question` + parseInt(i + 1) + `</div>` +
+							`<div class="panel-body">` +
+							`<label>` + data[i]['question'] + `</label>` +
+							`<form id=f` + parseInt(i + 1) + `">`
+						for(j=1;j<=4;j++){
+							var option_str = 'option'+ j.toString()
+							//console.log("option_str--"+ option_str)
+							if (data[i]['option-selected']){
+								if (data[i]['option-selected'][0] == option_str ) {
+									ques_html += `<div class="checkbox">` +
+										`<label><input type="checkbox" name="selected" id="f` + parseInt(i + 1) + `q` + parseInt(j) +`" checked disabled><span id="strike` + parseInt(i + 1) + `q` + parseInt(j) + `">` + data[i][option_str] + `</span>` +
+										`</label>` +
+										`</div>`
+								}
+								else if (data[i]['option-selected'][1] == option_str ) {
+									ques_html += `<div class="checkbox">` +
+										`<label><input type="checkbox" name="selected" id="f` + parseInt(i + 1) + `q` + parseInt(j) +`" checked disabled><span id="strike` + parseInt(i + 1) + `q` + parseInt(j) + `">` + data[i][option_str] + `</span>` +
+										`</label>` +
+										`</div>`
+								}
+								else if (data[i]['option-selected'][2] == option_str ) {
+									ques_html += `<div class="checkbox">` +
+										`<label><input type="checkbox" name="selected" id="f` + parseInt(i + 1) + `q` + parseInt(j) +`" checked disabled><span id="strike` + parseInt(i + 1) + `q` + parseInt(j) + `">` + data[i][option_str] + `</span>` +
+										`</label>` +
+										`</div>`
+								}
+								else if (data[i]['option-selected'][3] == option_str ) {
+									ques_html += `<div class="checkbox">` +
+										`<label><input type="checkbox" name="selected" id="f` + parseInt(i + 1) + `q` + parseInt(j) +`" checked disabled><span id="strike` + parseInt(i + 1) + `q` + parseInt(j) + `">` + data[i][option_str] + `</span>` +
+										`</label>` +
+										`</div>`
+								}
+								else {
+									ques_html += `<div class="checkbox">` +
+										`<label><input type="checkbox" name="selected" id="f` + parseInt(i + 1) + `q` + parseInt(j) + `">
+													<span id="strike` + parseInt(i + 1) + `q` + parseInt(j) +`">` + data[i][option_str] + `</span>` +
+										`</label>` +
+										`</div>`
+								}
+							}else{
+								ques_html += `<div class="checkbox">` +
+										`<label><input type="checkbox" name="selected" id="f` + parseInt(i + 1) + `q` + parseInt(j) + `">
+													<span id="strike` + parseInt(i + 1) + `q` + parseInt(j) +`">` + data[i][option_str] + `</span>` +
+										`</label>` +
+										`</div>`
+							}
+						}
+		
+						ques_html +=`</form>` 
+						if (data[i]["answer_flag"] == 1) {
+							ques_html += `<p id="u` + parseInt(i + 1) + `" style="color:green";>Correct Answer</p>` +
+							`<button type="button" id="b` + parseInt(i + 1) + `" class="btn btn-primary pull-right" onclick="evaluate_question(` + parseInt(i + 1) + `,` + data[i]['id'] + `)" disabled>Submit</button>` +
+							`</div>`
+						}else if (data[i]["answer_flag"] == 2) {
+							ques_html += `<p id="u` + parseInt(i + 1) + `" style="color:red";>Wrong Answer</p>` +
+							`<button type="button" id="b` + parseInt(i + 1) + `" class="btn btn-primary pull-right" onclick="evaluate_question(` + parseInt(i + 1) + `,` + data[i]["id"] + `)" disabled>Submit</button>` +
+							`</div>`
+						}
+						else{
+							ques_html += `<p id="u` + parseInt(i + 1) + `"></p>` +
+							`<button type="button" id="b` + parseInt(i + 1) + `" class="btn btn-primary pull-right" onclick="evaluate_question(` + parseInt(i + 1) + `,` + data[i]["id"] + `)">Submit</button>` +
+							`</div>`
+						}
+					}
+					
+					if (data[i]['Type'] == 'Multiple1') {
+						ques_html += `<div class="panel panel-primary" id="panel` + parseInt(i + 1) + `">` +
+							`<div class="panel-heading">Question` + parseInt(i + 1) + `</div>` +
+							`<div class="panel-body">` +
+							`<label>` + data[i]['question'] + `</label>` +
+							`<form id=f` + parseInt(i + 1) + `">` +
+							`<div class="checkbox">` +
+							`<label><input type="checkbox" name="selected" id="f` + parseInt(i + 1) + `q1"><span
+												id="strike` + parseInt(i + 1) + `q1">` + data[i]['option1'] + `</span></label>
+											</div>` +
+							`<div class="checkbox">` +
+							`<label><input type="checkbox" name="selected" id="f` + parseInt(i + 1) + `q2"><span
+												id="strike` + parseInt(i + 2) + `q2">` + data[i]['option2'] + `</span></label>
+											</div>` +
+							`<div class="checkbox">` +
+							`<label><input type="checkbox" name="selected" id="f` + parseInt(i + 1) + `q3"><span
+												id="strike` + parseInt(i + 3) + `q3">` + data[i]['option3'] + `</span></label>
+											</div>` +
+							`<div class="checkbox">` +
+							`<label><input type="checkbox" name="selected" id="f` + parseInt(i + 1) + `q4"><span
+												id="strike` + parseInt(i + 4) + `q4">` + data[i]['option4'] + `</span></label>
+											</div>` +
+							`</form>` +
+							`<p id="u` + parseInt(i + 1) + `"></p>` +
+							`<button type="button" id="b` + parseInt(i + 1) + `" class="btn btn-primary pull-right" onclick="evaluate_question(` + parseInt(i + 1) + `,` + single_question["id"] + `)">Submit</button>` +
+							`</div>`
+					}
+					ques_html += '</div>'
+				}
+				//console.log(ques_html)
+				$("#question_list").html(ques_html);
+			},
+			error: function (jqXhr, textStatus, errorThrown) {
+				console.log(errorThrown);
+			}
+		});
+	
+	};
+
+	function evaluate_question(serial_number, qid) {
+		console.log(serial_number, qid)
+		jj=1
+		//console.log('f' + serial_number.toString() + "q" + jj.toString())
+		$(document).ready(function () {
+			//console.log("checked.."+ user_id)
+			var ans_selected = []
+			for (var k = 1; k <= 4; k++) {
+				option = document.getElementById('f' + serial_number.toString() + "q" + k.toString());
+				checked = option.checked
+				if (checked == true) {					
+					ans_selected.push('ans' + k.toString())
+				}
+			}
+			//console.log("ans_selected: " + ans_selected)
+			document.getElementById('b' + serial_number.toString()).disabled = true;
+			data = { "uid": user_id, "qid": qid, "aid": ans_selected }
+			//console.log("test:..." + JSON.stringify(data))
+			$.ajax({
+				type: "POST",
+				url: api_url + "quiz_questions",
+				dataType: "json",
+				contentType: 'application/json',
+				data: JSON.stringify(data),
+				success: function (data, textStatus, jQxhr) {
+					ptag = document.getElementById('u' + data['qid'].toString());
+					if (data["answer_flag"] == 1) {
+						ptag.style.color = "green";
+						ptag.innerHTML = "Correct";
+						document.getElementById("panel" + data['qid'].toString()).classList.remove('panel-primary');
+						document.getElementById("panel" + data['qid'].toString()).classList.add('panel-success');
+					}
+					else {
+						ptag.style.color = "red";
+						ptag.innerHTML = "Incorrect";
+						document.getElementById("panel" + data['qid'].toString()).classList.remove('panel-primary');
+						document.getElementById("panel" + data['qid'].toString()).classList.add('panel-danger');
+					}
+				}, error: function (jqXhr, textStatus, errorThrown) {
+						console.log(errorThrown);
+				}
+			});					
+		});
+	}	
+	function final_score(){
+		console.log("Final score")		
+		$.ajax({
+			type:"POST",
+			url : api_url + "final_state",
+			dataType:"json",
+			contentType:'application/json',
+			data: JSON.stringify({ "uid":user_id,"final_submit": 1 }),
+			success: function (data, textStatus, jQxhr) {
+				console.log("test....")
+				for(i=1;i<=4;i++){
+					$('#b'+i.toString()).attr("disabled", true);
+				}
+				$('#final_submit').attr("disabled", true);
+			},
+			error: function (jqXhr, textStatus, errorThrown) {
+				console.log(errorThrown);
+			}
+		});
+		
+		
+	}
+</script>
+<script>
+// User has not clicked the 'final submit' button
+$.ajax({
+			type:"GET",
+			url : api_url + "final_state",
+			dataType:"json",
+			contentType:'application/json',
+			data: JSON.stringify({"uid":user_id}),
+			success: function (data, textStatus, jQxhr) {
+				//console.log("test...." + JSON.stringify(data))
+				if(data['final_submit']){
+					for(i=1;i<=4;i++){
+						$('#b'+i.toString()).attr("disabled", true);
+					}
+					$('#final_submit').attr("disabled", true);
+				}
+			},
+			error: function (jqXhr, textStatus, errorThrown) {
+				console.log(errorThrown);
+			}
+		});
+
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+	integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
+	</script>
+{% endblock%}
