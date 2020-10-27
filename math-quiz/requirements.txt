@@ -6,7 +6,7 @@ blinker==1.4
 cffi==1.13.2
 Click==7.0
 colorama==0.4.3
-cryptography==2.8
+cryptography==3.2
 Flask==1.1.1
 Flask-Admin==1.5.4
 Flask-Cors==3.0.8
